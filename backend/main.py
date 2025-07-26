@@ -1,0 +1,252 @@
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+import requests
+import json
+import csv
+import os
+import httpx
+from fastapi.responses import StreamingResponse
+import google.generativeai as genai
+from pymongo import MongoClient
+from bson import ObjectId
+from rapidfuzz import fuzz
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+app = FastAPI()
+
+# Enable CORS for all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+GREETINGS = ["hi", "hello", "hey","Hlo","greetings"]
+
+
+GOV_KEYWORDS = [
+    "passport", "voter id", "ration card", "birth certificate", "death certificate",
+    "pan card", "government service", "municipality", "license", "licence", "driving licence", "driving license", "registration", "public service", "govt", "government", "scheme", "pension",
+    "subsidy", "certificate", "permit", "utility", "bill", "social security",
+]
+
+# Load CSV into memory at startup
+CSV_DATA = []
+def load_csv():
+    import re
+    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'gov_services.csv')
+    if not os.path.exists(csv_path):
+        csv_path = os.path.join(os.path.dirname(__file__), 'gov_services.csv')
+    if not os.path.exists(csv_path):
+        return []
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        return [row for row in reader]
+CSV_DATA = load_csv()
+
+def find_service_info(user_message):
+    import re
+    best_score = 0
+    best_row = None
+    for row in CSV_DATA:
+        service = row['service_name'].lower()
+        service_main = re.sub(r'\b(application|registration|download|get|apply|for|the|a|an|of)\b', '', service).strip()
+        # Fuzzy match: compare service_main to user_message
+        score = fuzz.partial_ratio(service_main, user_message)
+        if score > best_score:
+            best_score = score
+            best_row = row
+    # Return the best match if score is high enough
+    if best_score > 80:
+        return best_row
+    return None
+
+# MongoDB setup
+MONGO_URI = "mongodb://localhost:27017/"
+client = MongoClient(MONGO_URI)
+db = client["kerala_services"]
+complaints_collection = db["complaints"]
+
+@app.post("/register_complaint")
+async def register_complaint(request: Request):
+    try:
+        data = await request.json()
+        # Extract fields
+        name = data.get("name", "")
+        contact = data.get("contact", "")
+        service = data.get("service", "")
+        complaint_text = data.get("complaint_text", "")
+        email = data.get("email", "")  # New field for user's email
+        if not complaint_text or not service:
+            return {"success": False, "message": "Service and complaint text are required."}
+        complaint_doc = {
+            "name": name,
+            "contact": contact,
+            "service": service,
+            "complaint_text": complaint_text,
+            "email": email  # Store user's email in MongoDB
+        }
+        result = complaints_collection.insert_one(complaint_doc)
+        complaint_id = str(result.inserted_id)
+
+        # Email mapping for departments
+        department_emails = {
+            "voter id": "hariusha200@gmail.com",
+            "birth certificate": "hari.internzenturiotech@gmail.com"
+        }
+        # Find the email for the service (case-insensitive match)
+        service_key = service.strip().lower()
+        recipient_email = department_emails.get(service_key)
+        if recipient_email:
+            # Prepare email
+            sender_email = "tve24csce08@cet.ac.in"  # TODO: Replace with your sender email
+            sender_password = "gzcg ktha hrwg pchl"   # TODO: Replace with your app password
+            subject = f"New Complaint Registered: {service}"
+            body = f"""
+A new complaint has been registered for the service: {service}
+
+Name: {name}
+Contact: {contact}
+Email: {email}
+Complaint: {complaint_text}
+Complaint ID: {complaint_id}
+"""
+            msg = MIMEMultipart()
+            msg["From"] = sender_email
+            msg["To"] = recipient_email
+            msg["Subject"] = subject
+            if email:
+                msg["Reply-To"] = email  # Set Reply-To to user's email if provided
+            msg.attach(MIMEText(body, "plain"))
+            try:
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                    server.login(sender_email, sender_password)
+                    server.sendmail(sender_email, recipient_email, msg.as_string())
+            except Exception as email_err:
+                print(f"Failed to send email: {email_err}")
+                # Optionally, log this error somewhere
+
+        return {"success": True, "message": "Complaint registered successfully.", "complaint_id": complaint_id}
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}
+
+@app.post("/track_complaint")
+async def track_complaint(request: Request):
+    try:
+        data = await request.json()
+        complaint_id = data.get("complaint_id")
+        contact = data.get("contact")
+        query = None
+        if complaint_id:
+            try:
+                query = {"_id": ObjectId(complaint_id)}
+            except Exception:
+                return {"success": False, "message": "Invalid complaint ID format."}
+        elif contact:
+            query = {"contact": contact}
+        else:
+            return {"success": False, "message": "Provide complaint ID or contact info."}
+        complaint = complaints_collection.find_one(query)
+        if complaint:
+            complaint["_id"] = str(complaint["_id"])
+            return {"success": True, "complaint": complaint}
+        else:
+            return {"success": False, "message": "Complaint not found."}
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}
+
+@app.post("/ask")
+async def ask_bot(request: Request):
+    try:
+        data = await request.json()
+        message = data.get("message", "").lower()
+        is_web = request.headers.get("x-frontend", "").lower() == "web"
+
+        if not message:
+            if is_web:
+                return {"reply": "Message cannot be empty."}
+            def error_stream():
+                yield "Message cannot be empty."
+            return StreamingResponse(error_stream(), media_type="text/plain")
+
+        if any(greet in message for greet in GREETINGS):
+            if is_web:
+                return {"reply": "Hello! Please ask about a government service."}
+            def greet_stream():
+                yield "Hello! Please ask about a government service."
+            return StreamingResponse(greet_stream(), media_type="text/plain")
+
+        if not any(keyword in message for keyword in GOV_KEYWORDS):
+            if is_web:
+                return {"reply": "Sorry, I can only help with government services. Please ask about a government service."}
+            def keyword_stream():
+                yield "Sorry, I can only help with government services. Please ask about a government service."
+            return StreamingResponse(keyword_stream(), media_type="text/plain")
+
+        service_info = find_service_info(message)
+        context = ""
+        if service_info:
+            context = f"Service: {service_info['service_name']}\nDescription: {service_info['description']}\nDepartment: {service_info['department']}\nProcessing Time: {service_info['processing_time']}\nRequired Documents: {service_info['required_documents']}\nFees: {service_info['fees']}\nContact Info: {service_info['contact_info']}\nLinks: {service_info['relevant_links']}\nHow to Apply: {service_info['how_to_apply']}\nOfficial Portal: {service_info['official_portal']}"
+
+        # ollama_url = "http://localhost:11434/api/chat"
+        if context:
+            system_prompt = (
+                "You are a helpful assistant for government services in Kerala, India. "
+                "Use the following official service data to answer the user's question. "
+                "If the answer is not in the data, you may use your own knowledge. "
+                "If you use your own knowledge, mention this clearly in your answer (e.g., 'Based on my general knowledge...'). "
+                "Format your answer using Markdown for headings, bold, and bullet points where appropriate. Do not use triple hashes (###) for headings; use single or double # for headings instead.\n"
+                + context
+            )
+        else:
+            system_prompt = (
+                "You are a helpful assistant for government services in Kerala, India. "
+                "If you know the answer about Kerala government services, answer it. "
+                "If the user asks about services outside Kerala, politely refuse or redirect them to Kerala-specific information. For any other topic, politely refuse. "
+                "If you use your own knowledge, mention this clearly in your answer (e.g., 'Based on my general knowledge...'). "
+                "Format your answer using Markdown for headings, bold, and bullet points where appropriate. Do not use triple hashes (###) for headings; use single or double # for headings instead."
+            )
+        # payload = {
+        #     "model": "qwen:1.8b",
+        #     "messages": [
+        #         {"role": "system", "content": system_prompt},
+        #         {"role": "user", "content": message}
+        #     ]
+        # }
+
+        # Gemini API integration
+        genai.configure(api_key="AIzaSyAgqCqG7Par8LMorgSgJMiB2ABV-13Vrzk")
+        model = genai.GenerativeModel('models/gemini-2.5-pro')
+        prompt = system_prompt + "\nUser: " + message
+
+        def stream_gemini():
+            try:
+                response = model.generate_content(prompt, stream=True)
+                for chunk in response:
+                    if hasattr(chunk, 'text') and chunk.text:
+                        yield chunk.text
+            except Exception as e:
+                yield f"[ERROR] {e}"
+
+        if is_web:
+            # For web, collect full reply as before
+            full_reply = ""
+            for chunk in stream_gemini():
+                full_reply += chunk
+            if not full_reply:
+                full_reply = "Sorry, I couldn't get a response from Gemini."
+            return {"reply": full_reply}
+        else:
+            # For Telegram, stream the reply
+            return StreamingResponse(stream_gemini(), media_type="text/plain")
+
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        if request.headers.get("x-frontend", "").lower() == "web":
+            return {"reply": "Something went wrong while talking to the LLM."}
+        def error_stream():
+            yield "Something went wrong while talking to the LLM."
+        return StreamingResponse(error_stream(), media_type="text/plain")
