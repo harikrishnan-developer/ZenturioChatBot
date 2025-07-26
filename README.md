@@ -251,4 +251,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for the people of Kerala**
 
+<<<<<<< HEAD
 *Empowering citizens with easy access to government services through technology.* 
+=======
+*Empowering citizens with easy access to government services through technology.*
+>>>>>>> 34117e7fd9979c5e99e4923ad3e3c7734c5b7b30
