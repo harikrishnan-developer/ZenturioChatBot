@@ -6,13 +6,17 @@ import httpx
 import time
 from telegram.error import RetryAfter, NetworkError
 import re
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Track running tasks per user
 user_tasks = {}
 # Track last message time per user to implement rate limiting
 user_last_message = {}
 
-TELEGRAM_TOKEN = "7323234298:AAEEyIjq0TK92C6oOaPCOukIdqQKCkmqimM"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "7323234298:AAEEyIjq0TK92C6oOaPCOukIdqQKCkmqimM")
 BACKEND_URL = "http://127.0.0.1:8000/ask"
 
 # Rate limiting: minimum seconds between messages per user

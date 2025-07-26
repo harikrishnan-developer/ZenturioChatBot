@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import requests
@@ -65,7 +67,7 @@ def find_service_info(user_message):
     return None
 
 # MongoDB setup
-MONGO_URI = "mongodb://localhost:27017/"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(MONGO_URI)
 db = client["kerala_services"]
 complaints_collection = db["complaints"]
@@ -102,8 +104,8 @@ async def register_complaint(request: Request):
         recipient_email = department_emails.get(service_key)
         if recipient_email:
             # Prepare email
-            sender_email = "tve24csce08@cet.ac.in"  # TODO: Replace with your sender email
-            sender_password = "gzcg ktha hrwg pchl"   # TODO: Replace with your app password
+            sender_email = os.getenv("SENDER_EMAIL", "your_gmail@gmail.com")
+            sender_password = os.getenv("SENDER_PASSWORD", "your_app_password")
             subject = f"New Complaint Registered: {service}"
             body = f"""
 A new complaint has been registered for the service: {service}
@@ -218,7 +220,7 @@ async def ask_bot(request: Request):
         # }
 
         # Gemini API integration
-        genai.configure(api_key="AIzaSyAgqCqG7Par8LMorgSgJMiB2ABV-13Vrzk")
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY", "AIzaSyAgqCqG7Par8LMorgSgJMiB2ABV-13Vrzk"))
         model = genai.GenerativeModel('models/gemini-2.5-pro')
         prompt = system_prompt + "\nUser: " + message
 
