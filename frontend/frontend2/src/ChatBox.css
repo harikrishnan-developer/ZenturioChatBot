@@ -81,7 +81,8 @@
   padding: 14px 18px;
   box-shadow: 0 2px 8px rgba(56, 142, 60, 0.06);
   font-size: 1.08rem;
-  word-break: break-word;
+  overflow-wrap: break-word;  /* This is the fix */
+  word-break: normal;         /* Reset the old property */
   min-width: 60px;
 }
 
