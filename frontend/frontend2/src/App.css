@@ -234,3 +234,77 @@ html, body {
 .emergency-table tr:nth-child(odd) {
   background: #fff;
 }
+
+/* Responsive layout for mobile devices */
+@media (max-width: 600px) {
+  .app-layout {
+    flex-direction: column;
+    padding: 0;
+  }
+  .topbar {
+    padding: 8px 12px;
+  }
+  .sidebar-drawer {
+    width: 80vw;
+    min-width: unset;
+    max-width: 90vw;
+  }
+  .main-content {
+    padding: 8px;
+  }
+  .chat-container {
+    padding: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+  .chat-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .input-area {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .input-area input {
+    width: 100%;
+    font-size: 1rem;
+  }
+  .complaint-modal-content {
+    width: 95vw;
+    min-width: unset;
+    padding: 12px;
+  }
+  .service-category ul, .emergency-table {
+    font-size: 0.95rem;
+  }
+  .chat-box {
+    max-height: 50vh;
+    min-height: 200px;
+    padding: 4px;
+  }
+  .message-content {
+    font-size: 1rem;
+    word-break: break-word;
+  }
+  .sidebar {
+    padding: 8px 0;
+  }
+}
+
+/* Make buttons and inputs more touch-friendly */
+input, textarea, button {
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+}
+button {
+  min-width: 90px;
+  margin: 4px 0;
+}
+
+/* Improve modal overlay for mobile */
+.complaint-modal {
+  align-items: flex-end;
+  padding-bottom: 0;
+}
