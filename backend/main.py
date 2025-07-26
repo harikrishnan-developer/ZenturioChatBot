@@ -220,7 +220,10 @@ async def ask_bot(request: Request):
         # }
 
         # Gemini API integration
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY", "AIzaSyAgqCqG7Par8LMorgSgJMiB2ABV-13Vrzk"))
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if not gemini_api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is required")
+        genai.configure(api_key=gemini_api_key)
         model = genai.GenerativeModel('models/gemini-2.5-pro')
         prompt = system_prompt + "\nUser: " + message
 

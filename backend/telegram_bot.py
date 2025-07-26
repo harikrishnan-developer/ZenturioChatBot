@@ -16,7 +16,9 @@ user_tasks = {}
 # Track last message time per user to implement rate limiting
 user_last_message = {}
 
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "7323234298:AAEEyIjq0TK92C6oOaPCOukIdqQKCkmqimM")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN environment variable is required")
 BACKEND_URL = "http://127.0.0.1:8000/ask"
 
 # Rate limiting: minimum seconds between messages per user
