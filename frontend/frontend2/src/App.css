@@ -1,0 +1,236 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 64px;
+  background: #14213d;
+  color: #ffd600;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 12px rgba(20, 33, 61, 0.08);
+  z-index: 100;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  color: #ffd600;
+  font-size: 2rem;
+  cursor: pointer;
+  margin-right: 18px;
+  outline: none;
+}
+.topbar-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.sidebar-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(20, 33, 61, 0.18);
+  z-index: 200;
+  display: none;
+}
+.sidebar-drawer.open {
+  display: block;
+}
+.sidebar {
+  width: 240px;
+  background: #14213d;
+  color: #fff;
+  height: 100vh;
+  box-shadow: 2px 0 12px rgba(20, 33, 61, 0.08);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  animation: slideInSidebar 0.2s;
+}
+@keyframes slideInSidebar {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #e8f5e9 0%, #fffde7 100%);
+}
+.sidebar-header {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 32px 0 24px 0;
+  letter-spacing: 1px;
+  background: #232946;
+  color: #ffd600;
+}
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar nav ul li {
+  padding: 18px 32px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #fff;
+  border-left: 4px solid transparent;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.sidebar nav ul li:hover,
+.sidebar nav ul li.active {
+  background: #232946;
+  color: #ffd600;
+  border-left: 4px solid #ffd600;
+}
+
+.main-content {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  overflow-y: auto;
+  margin-top: 64px;
+}
+.info-section, .emergency-section {
+  margin: 48px auto;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(20, 33, 61, 0.10);
+  padding: 40px 32px;
+  color: #232946;
+}
+.info-section h2, .emergency-section h2 {
+  color: #14213d;
+  margin-bottom: 18px;
+}
+.emergency-section ul {
+  padding-left: 0;
+  list-style: none;
+}
+.emergency-section li {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.chat-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+  min-height: 600px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;
+}
+
+.fullscreen-chat-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  background: #fff;
+}
+
+/* Optionally override chat-section if ChatBox uses it */
+.chat-section {
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  height: 100vh !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.company-info {
+  background: #1a2747;
+  border-radius: 8px;
+  padding: 16px 12px;
+  margin: 0 16px 24px 16px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  text-align: center;
+}
+.service-category {
+  margin-bottom: 32px;
+  padding: 24px 20px;
+  background: #f7fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(20,33,61,0.04);
+}
+.service-category h3 {
+  color: #14213d;
+  margin-bottom: 12px;
+  font-size: 1.18rem;
+}
+.service-category ul {
+  padding-left: 18px;
+}
+.service-category li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+.service-category a {
+  color: #1a237e;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.service-category a:hover {
+  color: #3949ab;
+}
+
+.emergency-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  background: #f7fafc;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 1rem;
+}
+.emergency-table th, .emergency-table td {
+  border: 1px solid #e0e0e0;
+  padding: 10px 14px;
+  text-align: left;
+}
+.emergency-table th {
+  background: #14213d;
+  color: #ffd600;
+  font-weight: bold;
+}
+.emergency-table tr:nth-child(even) {
+  background: #f1f8e9;
+}
+.emergency-table tr:nth-child(odd) {
+  background: #fff;
+}
