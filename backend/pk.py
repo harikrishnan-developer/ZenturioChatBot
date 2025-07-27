@@ -10,5 +10,5 @@ if not gemini_api_key:
 
 genai.configure(api_key=gemini_api_key)
 
-for model in genai.list_models():
-   print(model.name)
+ for model in genai.list_models():
+    print(model.name)
