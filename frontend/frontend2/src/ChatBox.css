@@ -86,6 +86,28 @@
   min-width: 60px;
 }
 
+/* More specific rules for markdown content */
+.message-content p,
+.message-content ul,
+.message-content li,
+.message-content ol,
+.message-content blockquote,
+.message-content pre {
+  white-space: pre-wrap; /* Crucial for wrapping text */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.message-content ul, .message-content ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.message-content li {
+  margin-bottom: 4px;
+}
+
 .message.user {
   flex-direction: row-reverse;
   margin-left: auto;
@@ -373,4 +395,45 @@
 }
 .mode-icon:not(.active) {
   color: #fff;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .chat-header {
+    padding: 12px 16px;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+  }
+  .chat-title {
+    font-size: 1.3rem;
+    margin-bottom: 8px; /* Add space below title if it wraps */
+    width: 100%; /* Take full width */
+    text-align: center;
+  }
+  .mode-switch {
+    order: 3; /* Move to the end */
+    margin-left: 0;
+  }
+  .complaint-btn, .track-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    flex-grow: 1; /* Allow buttons to fill space */
+  }
+  .chat-box {
+    padding: 0 8px;
+  }
+  .message {
+    max-width: 95%;
+    margin: 12px 0;
+  }
+  .message-content {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+  .input-area {
+    padding: 8px;
+  }
+  .input-area input, .input-area button {
+    padding: 12px;
+    font-size: 1rem;
+  }
 }
