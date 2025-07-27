@@ -124,9 +124,10 @@ Complaint ID: {complaint_id}
                 msg["Reply-To"] = email  # Set Reply-To to user's email if provided
             msg.attach(MIMEText(body, "plain"))
             try:
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                    server.login(sender_email, sender_password)
-                    server.sendmail(sender_email, recipient_email, msg.as_string())
+                with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                     server.starttls()
+                     server.login(sender_email, sender_password)
+                     server.sendmail(sender_email, recipient_email, msg.as_string())
             except Exception as email_err:
                 print(f"Failed to send email: {email_err}")
                 # Optionally, log this error somewhere

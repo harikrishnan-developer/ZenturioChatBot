@@ -15,7 +15,7 @@ load_dotenv()
 # Configuration
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # Your Render app URL + /webhook
-BACKEND_URL = os.getenv("BACKEND_URL", "https://your-backend-url.onrender.com/ask")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://zenturiochatbot.onrender.com/ask")
 
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_TOKEN environment variable is required")

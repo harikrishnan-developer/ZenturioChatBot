@@ -19,7 +19,7 @@ user_last_message = {}
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_TOKEN environment variable is required")
-BACKEND_URL = "http://127.0.0.1:8000/ask"
+BACKEND_URL = "https://zenturiochatbot.onrender.com/ask"
 
 # Rate limiting: minimum seconds between messages per user
 RATE_LIMIT_SECONDS = 2
