@@ -17,5 +17,5 @@ services:
         sync: false
       - key: SENDER_EMAIL
         sync: false
-      - key: SENDER_PASSWORD
+      - key: SENDGRID_API_KEY
         sync: false

@@ -46,7 +46,7 @@ In your Render service settings, add these environment variables:
 - **`GEMINI_API_KEY`**: Your Google Gemini API key
 - **`MONGO_URI`**: Your MongoDB connection string
 - **`SENDER_EMAIL`**: Email for sending notifications
-- **`SENDER_PASSWORD`**: App password for email
+- **`SENDGRID_API_KEY`**: Your SendGrid API key for sending emails
 
 ### 4. Deploy the Service
 

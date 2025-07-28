@@ -12,9 +12,9 @@ import google.generativeai as genai
 from pymongo import MongoClient
 from bson import ObjectId
 from rapidfuzz import fuzz
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+# Email imports
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Email, To, Content
 
 app = FastAPI()
 
@@ -103,9 +103,8 @@ async def register_complaint(request: Request):
         service_key = service.strip().lower()
         recipient_email = department_emails.get(service_key)
         if recipient_email:
-            # Prepare email
-            sender_email = os.getenv("SENDER_EMAIL", "your_gmail@gmail.com")
-            sender_password = os.getenv("SENDER_PASSWORD", "your_app_password")
+            # Prepare email using SendGrid API (free tier allows 100 emails/day)
+            sender_email = os.getenv("SENDER_EMAIL", "haribro00123@gmail.com")
             subject = f"New Complaint Registered: {service}"
             body = f"""
 A new complaint has been registered for the service: {service}
@@ -116,18 +115,28 @@ Email: {email}
 Complaint: {complaint_text}
 Complaint ID: {complaint_id}
 """
-            msg = MIMEMultipart()
-            msg["From"] = sender_email
-            msg["To"] = recipient_email
-            msg["Subject"] = subject
-            if email:
-                msg["Reply-To"] = email  # Set Reply-To to user's email if provided
-            msg.attach(MIMEText(body, "plain"))
+            
             try:
-                with smtplib.SMTP("smtp.gmail.com", 587) as server:
-                     server.starttls()
-                     server.login(sender_email, sender_password)
-                     server.sendmail(sender_email, recipient_email, msg.as_string())
+                sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
+                
+                if not sendgrid_api_key:
+                    raise ValueError("SENDGRID_API_KEY environment variable is required")
+                
+                # Create SendGrid message
+                from_email = Email(sender_email)
+                to_email = To(recipient_email)
+                content = Content("text/plain", body)
+                mail = Mail(from_email, to_email, subject, content)
+                
+                # Add reply-to header if user provided email
+                if email:
+                    mail.reply_to = Email(email)
+                
+                # Send email via SendGrid
+                sg = SendGridAPIClient(sendgrid_api_key)
+                response = sg.send(mail)
+                
+                print(f"Email sent successfully via SendGrid with status code: {response.status_code}")
             except Exception as email_err:
                 print(f"Failed to send email: {email_err}")
                 # Optionally, log this error somewhere

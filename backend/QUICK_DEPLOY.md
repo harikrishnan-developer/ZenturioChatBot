@@ -27,6 +27,9 @@ TELEGRAM_TOKEN=your_bot_token
 WEBHOOK_URL=https://your-service-name.onrender.com/webhook
 BACKEND_URL=https://your-backend-service.onrender.com/ask
 GEMINI_API_KEY=your_gemini_key
+MONGO_URI=your_mongodb_atlas_connection_string
+SENDER_EMAIL=haribro00123@gmail.com
+SENDGRID_API_KEY=your_sendgrid_api_key
 ```
 
 ### 3. Deploy & Test
@@ -72,6 +75,7 @@ curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
 - ❌ **Service sleeping**: Render free tier sleeps after 15min
 - ❌ **Wrong backend URL**: Update to your deployed backend
 - ❌ **Missing env vars**: Check all required variables are set
+- ❌ **Email not working**: Render blocks SMTP; use Mailgun API instead (configure `MAILGUN_API_KEY` and `MAILGUN_DOMAIN`)
 
 ## 💡 Pro Tips
 
