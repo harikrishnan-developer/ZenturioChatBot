@@ -137,6 +137,32 @@ Complaint ID: {complaint_id}
                 response = sg.send(mail)
                 
                 print(f"Email sent successfully via SendGrid with status code: {response.status_code}")
+                # Send a copy to the user if they provided their email
+                if email:
+                    try:
+                        user_subject = f"Copy of Your Complaint Registration: {service}"
+                        user_body = f"""
+Dear {name},
+
+Thank you for registering your complaint regarding: {service}.
+
+Here are the details you submitted:
+
+Name: {name}
+Contact: {contact}
+Complaint: {complaint_text}
+Complaint ID: {complaint_id}
+
+We have forwarded your complaint to the respective department. You will be contacted if further information is required.
+
+Best regards,
+Kerala Services Bot
+"""
+                        user_mail = Mail(from_email, To(email), user_subject, Content("text/plain", user_body))
+                        sg.send(user_mail)
+                        print(f"Copy sent to user at {email}")
+                    except Exception as user_email_err:
+                        print(f"Failed to send copy to user: {user_email_err}")
             except Exception as email_err:
                 print(f"Failed to send email: {email_err}")
                 # Optionally, log this error somewhere

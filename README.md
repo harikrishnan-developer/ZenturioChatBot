@@ -65,8 +65,8 @@ A comprehensive chatbot that helps citizens access information about Kerala gove
    
    # Set environment variables
    export MONGO_URI="your_mongodb_connection_string"
-   export SENDER_EMAIL="your_gmail@gmail.com"
-   export SENDER_PASSWORD="your_gmail_app_password"
+   export SENDER_EMAIL="your_email@yourdomain.com"
+   export SENDGRID_API_KEY="your_sendgrid_api_key"
    
    # Run backend
    cd backend
@@ -90,7 +90,7 @@ A comprehensive chatbot that helps citizens access information about Kerala gove
 - **FastAPI**: Modern, fast web framework for building APIs
 - **MongoDB**: NoSQL database for storing complaints and data
 - **Google Gemini AI**: Advanced AI model for intelligent responses
-- **SMTP**: Email functionality for complaint notifications
+- **SendGrid API**: Email functionality for complaint notifications
 - **RapidFuzz**: Fuzzy string matching for service identification
 
 ### Frontend
@@ -144,8 +144,8 @@ System: Returns complaint status and details
 ### Environment Variables
 ```bash
 MONGO_URI=mongodb://localhost:27017/
-SENDER_EMAIL=your_gmail@gmail.com
-SENDER_PASSWORD=your_gmail_app_password
+SENDER_EMAIL=haribro00123@gmail.com
+SENDGRID_API_KEY=your_sendgrid_api_key
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
@@ -197,7 +197,7 @@ department_emails = {
 - **Input Validation**: Sanitizes all user inputs
 - **Rate Limiting**: Prevents abuse and spam
 - **Error Handling**: Graceful error management
-- **Secure Email**: SMTP with authentication
+- **Secure Email**: SendGrid API with authentication
 - **CORS Protection**: Cross-origin request handling
 
 ## 🚀 Deployment
