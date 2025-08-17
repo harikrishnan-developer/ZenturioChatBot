@@ -263,13 +263,18 @@ async def ask_bot(request: Request):
             return StreamingResponse(greet_stream(), media_type="text/plain")
 
         if not any(keyword in message for keyword in GOV_KEYWORDS):
-            if is_web:
-                return {"reply": "Sorry, I can only help with government services. Please ask about a government service."}
-            def keyword_stream():
-                yield "Sorry, I can only help with government services. Please ask about a government service."
-            return StreamingResponse(keyword_stream(), media_type="text/plain")
+            # Attempt fuzzy matching even if no exact keyword matches
+            service_info = find_service_info(message)
+            if service_info:
+                context = f"Service: {service_info['service_name']}\nDescription: {service_info['description']}\nDepartment: {service_info['department']}\nProcessing Time: {service_info['processing_time']}\nRequired Documents: {service_info['required_documents']}\nFees: {service_info['fees']}\nContact Info: {service_info['contact_info']}"
+                # Proceed with context
+            else:
+                if is_web:
+                    return {"reply": "Sorry, I can only help with government services. Please ask about a government service."}
+                def keyword_stream():
+                    yield "Sorry, I can only help with government services. Please ask about a government service."
+                return StreamingResponse(keyword_stream(), media_type="text/plain")
 
-        service_info = find_service_info(message)
         context = ""
         if service_info:
             context = f"Service: {service_info['service_name']}\nDescription: {service_info['description']}\nDepartment: {service_info['department']}\nProcessing Time: {service_info['processing_time']}\nRequired Documents: {service_info['required_documents']}\nFees: {service_info['fees']}\nContact Info: {service_info['contact_info']}\nLinks: {service_info['relevant_links']}\nHow to Apply: {service_info['how_to_apply']}\nOfficial Portal: {service_info['official_portal']}"
