@@ -30,10 +30,45 @@ GREETINGS = ["hi", "hello", "hey","Hlo","greetings"]
 
 
 GOV_KEYWORDS = [
-    "passport", "voter id", "ration card", "birth certificate", "death certificate",
-    "pan card", "government service", "municipality", "license", "licence", "driving licence", "driving license", "registration", "public service", "govt", "government", "scheme", "pension",
-    "subsidy", "certificate", "permit", "utility", "bill", "social security",
+    # Identity & Core Documents
+    "passport", "voter id", "ration card", "aadhaar", "e-aadhaar", "election card",
+    "voter list", "gazette notification", "identity card", "pan card",
+    
+    # Certificates
+    "birth certificate", "death certificate", "income certificate", "caste certificate",
+    "domicile certificate", "nativity certificate", "residence certificate", "community certificate",
+    "minority certificate", "character certificate", "marriage certificate", "divorce certificate",
+    "disability certificate", "migration certificate", "obc certificate", "creamy layer certificate",
+    "medical certificate", "encumbrance certificate", "fair value certificate",
+    
+    # Property & Land Records
+    "land record", "property tax", "land tax", "land registration", "survey number", "mutation",
+    "building permit", "occupancy certificate", "house tax",
+    
+    # Transport & Vehicle
+    "license", "licence", "driving licence", "driving license", "vehicle registration", "rc book",
+    "motor vehicle tax", "pollution certificate", "fitness certificate", "road tax", "transport permit",
+    
+    # Utilities & Bills
+    "utility", "bill", "water bill", "electricity bill", "kseb", "gas connection", "telephone bill",
+    
+    # Schemes & Welfare
+    "scheme", "pension", "widow pension", "old age pension", "disability pension", "scholarship",
+    "student loan subsidy", "agriculture subsidy", "housing scheme", "employment scheme", "welfare fund",
+    "kudumbashree", "karunya scheme", "ayushman bharat", "insurance card",
+    
+    # Municipality / Panchayat Services
+    "government service", "public service", "municipality", "panchayat", "trade license",
+    "shop license", "birth registration", "death registration", "building approval",
+    "sanitation services", "water connection",
+    
+    # General
+    "govt", "government", "permit", "social security",
+    
+    # Kerala-specific portals & services
+    "akshaya", "sevana", "sanchaya", "relis", "edistrict", "ksrtc"
 ]
+
 
 # Load CSV into memory at startup
 CSV_DATA = []
