@@ -155,7 +155,10 @@ Complaint ID: {complaint_id}
                 sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
                 
                 if not sendgrid_api_key:
+                    print("SENDGRID_API_KEY environment variable is not set.")
                     raise ValueError("SENDGRID_API_KEY environment variable is required")
+                
+                print(f"Attempting to send email to: {recipient_email} from: {sender_email}")
                 
                 # Create SendGrid message
                 from_email = Email(sender_email)
@@ -171,7 +174,13 @@ Complaint ID: {complaint_id}
                 sg = SendGridAPIClient(sendgrid_api_key)
                 response = sg.send(mail)
                 
-                print(f"Email sent successfully via SendGrid with status code: {response.status_code}")
+                try:
+                    response = sg.send(mail)
+                    print(f"Email sent successfully via SendGrid with status code: {response.status_code}")
+                    print(f"Email response body: {response.body}")
+                    print(f"Email response headers: {response.headers}")
+                except Exception as e:
+                    print(f"Error sending email to department: {e}")
                 # Send a copy to the user if they provided their email
                 if email:
                     try:
@@ -194,6 +203,7 @@ Best regards,
 Kerala Services Bot
 """
                         user_mail = Mail(from_email, To(email), user_subject, Content("text/plain", user_body))
+                        print(f"Attempting to send copy to user at: {email}")
                         sg.send(user_mail)
                         print(f"Copy sent to user at {email}")
                     except Exception as user_email_err:
