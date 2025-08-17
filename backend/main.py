@@ -279,7 +279,6 @@ async def ask_bot(request: Request):
         if service_info:
             context = f"Service: {service_info['service_name']}\nDescription: {service_info['description']}\nDepartment: {service_info['department']}\nProcessing Time: {service_info['processing_time']}\nRequired Documents: {service_info['required_documents']}\nFees: {service_info['fees']}\nContact Info: {service_info['contact_info']}\nLinks: {service_info['relevant_links']}\nHow to Apply: {service_info['how_to_apply']}\nOfficial Portal: {service_info['official_portal']}"
 
-        # ollama_url = "http://localhost:11434/api/chat"
         if context:
             system_prompt = (
                 "You are a helpful assistant for government services in Kerala, India. "
