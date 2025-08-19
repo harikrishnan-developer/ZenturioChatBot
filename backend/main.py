@@ -262,19 +262,7 @@ async def ask_bot(request: Request):
                 yield "Hello! Please ask about a government service."
             return StreamingResponse(greet_stream(), media_type="text/plain")
 
-        # Fuzzy match GOV_KEYWORDS
-        keyword_found = False
-        best_keyword = None
-        best_score = 0
-        for keyword in GOV_KEYWORDS:
-            score = fuzz.partial_ratio(keyword, message)
-            if score > best_score:
-                best_score = score
-                best_keyword = keyword
-            if score > 80:
-                keyword_found = True
-                break
-        if not keyword_found:
+        if not any(keyword in message for keyword in GOV_KEYWORDS):
             if is_web:
                 return {"reply": "Sorry, I can only help with government services. Please ask about a government service."}
             def keyword_stream():
