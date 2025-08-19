@@ -312,7 +312,12 @@ async def ask_bot(request: Request):
             try:
                 response = model.generate_content(prompt, stream=True)
                 for chunk in response:
-                    if hasattr(chunk, 'text') and chunk.text:
+                    # Handle multi-part responses
+                    if hasattr(chunk, 'parts') and chunk.parts:
+                        for part in chunk.parts:
+                            if hasattr(part, 'text') and part.text:
+                                yield part.text
+                    elif hasattr(chunk, 'text') and chunk.text:
                         yield chunk.text
             except Exception as e:
                 yield f"[ERROR] {e}"
